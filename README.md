@@ -30,5 +30,5 @@
 
 ## 🔗 روابط هامة ومباشرة
 - **الموقع المباشر:** [https://alansaregypt.com](https://alansaregypt.com)
-- **متابعة عمليات النشر (Actions):** [GitHub Actions Log](https://github.com/abdoarabacademy/alansar-egypt/actions)
+- **متابعة عمليات النشر (Actions):** [GitHub Actions Log](https://github.com/zedana01/alansar-egypt/actions)
 - **لوحة تحكم Cloudflare Pages:** [Cloudflare Dashboard](https://dash.cloudflare.com/)
