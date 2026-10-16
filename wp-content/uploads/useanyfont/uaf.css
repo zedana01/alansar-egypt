@@ -1,0 +1,10 @@
+				@font-face {
+					font-family: 'tajwal';
+					src: url('/wp-content/uploads/useanyfont/3051Tajwal.woff2') format('woff2'),
+						url('/wp-content/uploads/useanyfont/3051Tajwal.woff') format('woff');
+					  font-display: auto;
+				}
+
+				.tajwal{font-family: 'tajwal' !important;}
+
+		
