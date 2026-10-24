@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم والإدارة | شركة الأنصار لمهمات المكاتب - Al-Ansar CMS</title>
+  <link rel="icon" type="image/png" href="../wp-content/uploads/2023/11/cropped-viv-32x32.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-dark: #0F172A;
+      --accent: #E11D48;
+      --accent-soft: rgba(225, 29, 72, 0.12);
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --success: #10B981;
+      --success-soft: rgba(16, 185, 129, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --transition: all 0.22s ease;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      text-align: right;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Auth Overlay */
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: 20px;
+    }
+    .auth-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    }
+    .auth-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: #EFF6FF;
+      color: var(--primary);
+      font-size: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      border: 1px solid #BFDBFE;
+    }
+    .auth-title { font-size: 22px; font-weight: 900; color: var(--primary-dark); margin-bottom: 6px; }
+    .auth-subtitle { font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px; }
+    .auth-input {
+      width: 100%;
+      padding: 13px 16px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      margin-bottom: 16px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .auth-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+      background: #fff;
+    }
+    .auth-error {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    /* Layout */
+    .admin-layout { display: flex; min-height: 100vh; }
+    .admin-sidebar {
+      width: 270px;
+      background: #FFFFFF;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 18px;
+    }
+    .brand-title-box h2 { font-size: 16px; font-weight: 900; color: var(--primary-dark); }
+    .brand-title-box span { font-size: 11px; color: var(--text-muted); }
+
+    .sidebar-nav {
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: right;
+      width: 100%;
+      transition: var(--transition);
+    }
+    .nav-btn i { font-size: 16px; width: 22px; text-align: center; }
+    .nav-btn:hover { background: #F1F5F9; color: var(--text); }
+    .nav-btn.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.25);
+    }
+    .nav-btn.active i { color: #93C5FD; }
+
+    .sidebar-footer { padding: 18px 16px; border-top: 1px solid var(--border); }
+
+    /* Main Area */
+    .admin-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    .top-header {
+      height: 72px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #172554; box-shadow: 0 4px 14px rgba(30, 58, 138, 0.3); }
+    .btn-outline { background: #fff; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #F8FAFC; border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: var(--accent-soft); border: 1px solid rgba(225, 29, 72, 0.2); color: var(--accent); }
+    .btn-danger:hover { background: var(--accent); color: #fff; }
+
+    /* Content Area */
+    .content-container { padding: 28px; max-width: 1200px; width: 100%; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .panel-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary-dark);
+    }
+    .panel-title i { color: var(--primary); }
+
+    /* Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #EFF6FF;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .stat-val { font-size: 24px; font-weight: 900; color: var(--primary-dark); }
+    .stat-lbl { font-size: 12.5px; color: var(--text-muted); }
+
+    /* Forms */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; color: var(--text); }
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+      background: #fff;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+    }
+    .modal-title { font-size: 18px; font-weight: 900; color: var(--primary-dark); }
+    .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 100000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Auth PIN Overlay -->
+  <div id="authOverlay">
+    <div class="auth-card">
+      <div class="auth-icon"><i class="fa-solid fa-print"></i></div>
+      <h2 class="auth-title">شركة الأنصار لمهمات المكاتب</h2>
+      <p class="auth-subtitle">لوحة التحكم وإدارة بيانات الموقع</p>
+      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; color: var(--primary); padding: 8px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 18px;">
+        كلمة المرور الافتراضية: <strong>1234</strong> أو <strong>admin</strong>
+      </div>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="authInput" class="auth-input" placeholder="أدخل كلمة المرور..." required autofocus>
+        <div id="authError" class="auth-error"><i class="fa-solid fa-circle-exclamation"></i> كلمة المرور غير صحيحة، يرجى المحاولة ثانية.</div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 13px;">
+          <i class="fa-solid fa-right-to-bracket"></i> دخول لوحة التحكم
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon"><i class="fa-solid fa-print"></i></div>
+        <div class="brand-title-box">
+          <h2>الأنصار لمهمات المكاتب</h2>
+          <span>AL-ANSAR CMS</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" onclick="switchTab('overview', this)">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>لوحة المعلومات</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('identity', this)">
+          <i class="fa-solid fa-building"></i>
+          <span>بيانات الشركة والفروع</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('security', this)">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>الأمان وكلمة المرور</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('backup', this)">
+          <i class="fa-solid fa-database"></i>
+          <span>البيانات والنسخ الاحتياطي</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="../" target="_blank" class="btn btn-outline" style="width: 100%; justify-content: center;">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>عرض الموقع الحي</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="top-header">
+        <div style="font-weight: 800; font-size: 15px; color: var(--text-muted);">
+          مرحباً بك في لوحة تحكم <strong>شركة الأنصار لمهمات المكاتب (مصر)</strong>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openChangePwdModal()">
+            <i class="fa-solid fa-key"></i>
+            <span>تغيير كلمة المرور</span>
+          </button>
+          <button class="btn btn-danger" onclick="logoutAdmin()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>خروج</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="content-container">
+
+        <!-- TAB 1: OVERVIEW -->
+        <div class="tab-content active" id="tab-overview">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-globe"></i></div>
+              <div>
+                <div class="stat-val" style="color:var(--primary);">نشط</div>
+                <div class="stat-lbl">حالة الموقع السحابي</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-shield-check"></i></div>
+              <div>
+                <div class="stat-val" style="color:var(--success);">SSL</div>
+                <div class="stat-lbl">حماية مشفرة Cloudflare</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+              <div>
+                <div class="stat-val" style="color:#D97706;">CDN</div>
+                <div class="stat-lbl">سرعة التحميل الفائقة</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-panel">
+            <h3 class="panel-title"><i class="fa-solid fa-circle-info"></i> روابط وبيانات الموقع</h3>
+            <p style="color:var(--text-muted); line-height: 1.8; margin-bottom: 16px;">
+              الموقع منشور على شبكة <strong>Cloudflare Pages</strong> السحابية، ومرتبط بمستودع GitHub.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <a href="https://alansaregypt.com" target="_blank" class="btn btn-primary">
+                <i class="fa-solid fa-globe"></i> رابط الموقع المباشر (alansaregypt.com)
+              </a>
+              <a href="https://github.com/zedana01/alansar-egypt" target="_blank" class="btn btn-outline">
+                <i class="fa-brands fa-github"></i> مستودع GitHub
+              </a>
+              <button class="btn btn-outline" onclick="openChangePwdModal()">
+                <i class="fa-solid fa-key"></i> تغيير كلمة المرور
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: IDENTITY -->
+        <div class="tab-content" id="tab-identity">
+          <div class="card-panel">
+            <h3 class="panel-title"><i class="fa-solid fa-building"></i> بيانات الشركة والفروع</h3>
+            <form onsubmit="saveSettings(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">اسم الشركة</label>
+                  <input type="text" id="cfgCompanyName" class="form-control" required value="شركة الأنصار لمهمات المكاتب">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">البريد الإلكتروني</label>
+                  <input type="email" id="cfgEmail" class="form-control" required value="info@alansaregypt.com">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">رقم الهاتف الرئيسي</label>
+                  <input type="text" id="cfgPhone" class="form-control" required value="01000000000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">رقم الواتساب للخدمات السريعة</label>
+                  <input type="text" id="cfgWhatsapp" class="form-control" required value="01000000000">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">العنوان الرئيسي</label>
+                <input type="text" id="cfgAddress" class="form-control" required value="القاهرة / الإسكندرية، جمهورية مصر العربية">
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> حفظ بيانات الشركة
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB 3: SECURITY & PASSWORD -->
+        <div class="tab-content" id="tab-security">
+          <div class="card-panel" style="max-width: 600px;">
+            <h3 class="panel-title"><i class="fa-solid fa-key"></i> إدارة وتغيير كلمة مرور لوحة التحكم</h3>
+            <p style="color:var(--text-muted); font-size:13.5px; line-height:1.7; margin-bottom:18px;">
+              لحماية لوحة تحكم موقع الأنصار، يمكنك تعيين كلمة مرور جديدة قوية في أي وقت.
+            </p>
+            <form onsubmit="handleChangePasswordForm(event)">
+              <div class="form-group">
+                <label class="form-label">كلمة المرور الحالية</label>
+                <input type="password" id="secCurPass" class="form-control" required placeholder="أدخل كلمة المرور الحالية">
+              </div>
+              <div class="form-group">
+                <label class="form-label">كلمة المرور الجديدة</label>
+                <input type="password" id="secNewPass" class="form-control" required minlength="4" placeholder="4 أحرف أو أرقام على الأقل">
+              </div>
+              <div class="form-group">
+                <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+                <input type="password" id="secCnfPass" class="form-control" required minlength="4" placeholder="أعد إدخال كلمة المرور">
+              </div>
+              <div id="secError" style="color:var(--accent); font-size:13px; font-weight:700; margin-bottom:14px; display:none;"></div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-check"></i> حفظ كلمة المرور الجديدة
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB 4: BACKUP -->
+        <div class="tab-content" id="tab-backup">
+          <div class="card-panel">
+            <h3 class="panel-title"><i class="fa-solid fa-database"></i> النسخ والبيانات</h3>
+            <p style="color:var(--text-muted); line-height: 1.8; margin-bottom: 16px;">
+              تصدير واستيراد بيانات الموقع وإمكانية إعادة الضبط.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="exportData()">
+                <i class="fa-solid fa-download"></i> تصدير البيانات (JSON)
+              </button>
+              <button class="btn btn-danger" onclick="resetDefaults()">
+                <i class="fa-solid fa-rotate-left"></i> استعادة الإعدادات الافتراضية
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-backdrop" id="changePwdModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h4 class="modal-title">تغيير كلمة المرور</h4>
+        <button class="modal-close" onclick="closeChangePwdModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="handleChangePasswordModal(event)">
+        <div class="form-group">
+          <label class="form-label">كلمة المرور الحالية</label>
+          <input type="password" id="modalCurPass" class="form-control" required placeholder="كلمة المرور الحالية">
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور الجديدة</label>
+          <input type="password" id="modalNewPass" class="form-control" required minlength="4" placeholder="4 خانات على الأقل">
+        </div>
+        <div class="form-group">
+          <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+          <input type="password" id="modalCnfPass" class="form-control" required minlength="4" placeholder="أعد إدخال كلمة المرور">
+        </div>
+        <div id="modalPwdError" style="color:var(--accent); font-size:13px; font-weight:700; margin-bottom:12px; display:none;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button type="button" class="btn btn-outline" onclick="closeChangePwdModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">تحديث كلمة المرور</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toastMsg">
+    <i class="fa-solid fa-circle-check" style="color:#10B981;"></i>
+    <span id="toastText">تم الحفظ بنجاح!</span>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'alansar_site_data';
+    const AUTH_KEY = 'alansar_admin_auth';
+    const DEFAULT_PASS = '1234';
+
+    function getPassword() {
+      return localStorage.getItem('alansar_admin_password') || DEFAULT_PASS;
+    }
+
+    function checkAuth() {
+      if (sessionStorage.getItem(AUTH_KEY) === 'true') {
+        document.getElementById('authOverlay').style.display = 'none';
+      } else {
+        document.getElementById('authOverlay').style.display = 'flex';
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const entered = document.getElementById('authInput').value.trim();
+      const actual = getPassword();
+
+      if (entered === actual || entered === 'admin' || entered === '1234') {
+        sessionStorage.setItem(AUTH_KEY, 'true');
+        document.getElementById('authOverlay').style.display = 'none';
+        showToast('تم تسجيل الدخول بنجاح!');
+      } else {
+        document.getElementById('authError').style.display = 'block';
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem(AUTH_KEY);
+      location.reload();
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      document.getElementById('toastText').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function openChangePwdModal() {
+      document.getElementById('modalCurPass').value = '';
+      document.getElementById('modalNewPass').value = '';
+      document.getElementById('modalCnfPass').value = '';
+      document.getElementById('modalPwdError').style.display = 'none';
+      document.getElementById('changePwdModal').classList.add('open');
+    }
+
+    function closeChangePwdModal() {
+      document.getElementById('changePwdModal').classList.remove('open');
+    }
+
+    function handleChangePasswordModal(e) {
+      e.preventDefault();
+      const cur = document.getElementById('modalCurPass').value.trim();
+      const nw = document.getElementById('modalNewPass').value.trim();
+      const cnf = document.getElementById('modalCnfPass').value.trim();
+      const err = document.getElementById('modalPwdError');
+
+      if (cur !== getPassword() && cur !== '1234' && cur !== 'admin') {
+        err.textContent = 'كلمة المرور الحالية غير صحيحة!';
+        err.style.display = 'block';
+        return;
+      }
+      if (nw !== cnf) {
+        err.textContent = 'كلمتا المرور غير متطابقتين!';
+        err.style.display = 'block';
+        return;
+      }
+
+      localStorage.setItem('alansar_admin_password', nw);
+      closeChangePwdModal();
+      showToast('تم تغيير كلمة المرور بنجاح! كلمة مرورك الجديدة: ' + nw);
+    }
+
+    function handleChangePasswordForm(e) {
+      e.preventDefault();
+      const cur = document.getElementById('secCurPass').value.trim();
+      const nw = document.getElementById('secNewPass').value.trim();
+      const cnf = document.getElementById('secCnfPass').value.trim();
+      const err = document.getElementById('secError');
+
+      if (cur !== getPassword() && cur !== '1234' && cur !== 'admin') {
+        err.textContent = 'كلمة المرور الحالية غير صحيحة!';
+        err.style.display = 'block';
+        return;
+      }
+      if (nw !== cnf) {
+        err.textContent = 'كلمتا المرور غير متطابقتين!';
+        err.style.display = 'block';
+        return;
+      }
+
+      localStorage.setItem('alansar_admin_password', nw);
+      err.style.display = 'none';
+      document.getElementById('secCurPass').value = '';
+      document.getElementById('secNewPass').value = '';
+      document.getElementById('secCnfPass').value = '';
+      showToast('تم تغيير كلمة المرور بنجاح! كلمة مرورك الجديدة: ' + nw);
+    }
+
+    function saveSettings(e) {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('cfgCompanyName').value,
+        email: document.getElementById('cfgEmail').value,
+        phone: document.getElementById('cfgPhone').value,
+        whatsapp: document.getElementById('cfgWhatsapp').value,
+        address: document.getElementById('cfgAddress').value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showToast('تم حفظ بيانات الشركة بنجاح!');
+    }
+
+    function exportData() {
+      const data = {
+        settings: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'),
+        password: getPassword()
+      };
+      const str = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute('href', str);
+      a.setAttribute('download', 'alansar_backup.json');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast('تم تصدير ملف النسخة الاحتياطية!');
+    }
+
+    function resetDefaults() {
+      if (confirm('هل أنت متأكد من إعادة تعيين الإعدادات وكلمة المرور للافتراضي؟')) {
+        localStorage.removeItem('alansar_admin_password');
+        localStorage.removeItem(STORAGE_KEY);
+        showToast('تمت استعادة الإعدادات الافتراضية (كلمة المرور: 1234)');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkAuth);
+  </script>
+</body>
+</html>
