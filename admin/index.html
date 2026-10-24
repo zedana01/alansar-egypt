@@ -341,9 +341,7 @@
       <div class="auth-icon"><i class="fa-solid fa-print"></i></div>
       <h2 class="auth-title">شركة الأنصار لمهمات المكاتب</h2>
       <p class="auth-subtitle">لوحة التحكم وإدارة بيانات الموقع</p>
-      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; color: var(--primary); padding: 8px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 18px;">
-        كلمة المرور الافتراضية: <strong>1234</strong> أو <strong>admin</strong>
-      </div>
+      
       <form onsubmit="handleLogin(event)">
         <input type="password" id="authInput" class="auth-input" placeholder="أدخل كلمة المرور..." required autofocus>
         <div id="authError" class="auth-error"><i class="fa-solid fa-circle-exclamation"></i> كلمة المرور غير صحيحة، يرجى المحاولة ثانية.</div>
@@ -577,7 +575,7 @@
   <script>
     const STORAGE_KEY = 'alansar_site_data';
     const AUTH_KEY = 'alansar_admin_auth';
-    const DEFAULT_PASS = '1234';
+    const DEFAULT_PASS = 'Abdo@ProF_2000';
 
     function getPassword() {
       return localStorage.getItem('alansar_admin_password') || DEFAULT_PASS;
@@ -596,7 +594,7 @@
       const entered = document.getElementById('authInput').value.trim();
       const actual = getPassword();
 
-      if (entered === actual || entered === 'admin' || entered === '1234') {
+      if (entered === actual) {
         sessionStorage.setItem(AUTH_KEY, 'true');
         document.getElementById('authOverlay').style.display = 'none';
         showToast('تم تسجيل الدخول بنجاح!');
@@ -645,7 +643,7 @@
       const cnf = document.getElementById('modalCnfPass').value.trim();
       const err = document.getElementById('modalPwdError');
 
-      if (cur !== getPassword() && cur !== '1234' && cur !== 'admin') {
+      if (cur !== getPassword()) {
         err.textContent = 'كلمة المرور الحالية غير صحيحة!';
         err.style.display = 'block';
         return;
@@ -668,7 +666,7 @@
       const cnf = document.getElementById('secCnfPass').value.trim();
       const err = document.getElementById('secError');
 
-      if (cur !== getPassword() && cur !== '1234' && cur !== 'admin') {
+      if (cur !== getPassword()) {
         err.textContent = 'كلمة المرور الحالية غير صحيحة!';
         err.style.display = 'block';
         return;
@@ -719,7 +717,7 @@
       if (confirm('هل أنت متأكد من إعادة تعيين الإعدادات وكلمة المرور للافتراضي؟')) {
         localStorage.removeItem('alansar_admin_password');
         localStorage.removeItem(STORAGE_KEY);
-        showToast('تمت استعادة الإعدادات الافتراضية (كلمة المرور: 1234)');
+        showToast('تمت استعادة الإعدادات الافتراضية بنجاح!');
       }
     }
 
